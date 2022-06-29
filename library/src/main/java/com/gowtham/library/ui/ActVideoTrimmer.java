@@ -132,19 +132,22 @@ public class ActVideoTrimmer extends LocalizationActivity {
     private boolean hidePlayerSeek, isAccurateCut, showFileLocationAlert;
     private CustomProgressView progressView;
     private String fileName;
+    private Toolbar topToolbar;
+    private Toolbar bottomToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_video_trimmer);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        bottomToolbar = findViewById(R.id.bottom_toolbar);
+        topToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(bottomToolbar);
         bundle = getIntent().getExtras();
         Gson gson = new Gson();
         String videoOption = bundle.getString(TrimVideo.TRIM_VIDEO_OPTION);
         trimVideoOptions = gson.fromJson(videoOption, TrimVideoOptions.class);
-        setUpToolBar(getSupportActionBar(), trimVideoOptions.title);
-        toolbar.setNavigationOnClickListener(v -> finish());
+        setUpToolBars(getSupportActionBar(), trimVideoOptions.title, trimVideoOptions.bottomText);
+        bottomToolbar.setNavigationOnClickListener(v -> finish());
         progressView = new CustomProgressView(this);
     }
 
@@ -179,11 +182,13 @@ public class ActVideoTrimmer extends LocalizationActivity {
             setDataInView();
     }
 
-    private void setUpToolBar(ActionBar actionBar, String title) {
+    private void setUpToolBars(ActionBar actionBar, String title, String bottomText) {
         try {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowHomeEnabled(true);
-            actionBar.setTitle(title != null ? title : getString(R.string.txt_edt_video));
+            actionBar.setTitle(bottomText != null ? bottomText : getString(R.string.trim));
+            topToolbar.setTitle(title != null ? title : getString(R.string.txt_edt_video));
+            bottomToolbar.setNavigationIcon(R.drawable.ic_close);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -214,7 +219,7 @@ public class ActVideoTrimmer extends LocalizationActivity {
             Runnable fileUriRunnable = () -> {
                 uri = Uri.parse(bundle.getString(TrimVideo.TRIM_VIDEO_URI));
 //              String path = FileUtils.getPath(ActVideoTrimmer.this, uri);
-                String path=FileUtils.getRealPath(ActVideoTrimmer.this,uri);
+                String path = FileUtils.getRealPath(ActVideoTrimmer.this, uri);
                 uri = Uri.parse(path);
                 runOnUiThread(() -> {
                     LogMessage.v("VideoUri:: " + uri);

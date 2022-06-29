@@ -31,13 +31,22 @@
                 android:background="@drawable/shape_circle_lib"
                 android:padding="12dp"
                 android:src="@drawable/ic_video_play_lib"
-                android:visibility="gone" />
+                android:visibility="gone"
+                tools:visibility="visible" />
 
             <ProgressBar
                 android:id="@+id/progress_circular"
-                android:layout_centerInParent="true"
-                style="@style/WView" />
+                style="@style/WView"
+                android:layout_centerInParent="true" />
         </RelativeLayout>
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/bottom_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#212121"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:titleTextColor="@color/colorWhite" />
 
     </LinearLayout>
 

@@ -18,6 +18,8 @@ public class TrimVideoOptions {
 
     public String title;
 
+    public String bottomText;
+
     public String local;
 
     public CompressOption compressOption;
