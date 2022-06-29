@@ -5,7 +5,6 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.utebayKazAlm.countriesapi"
         minSdkVersion 19
         targetSdkVersion 32
         versionCode 1
