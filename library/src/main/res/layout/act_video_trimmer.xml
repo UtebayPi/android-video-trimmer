@@ -39,6 +39,14 @@
                 style="@style/WView" />
         </RelativeLayout>
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/bottom_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#212121"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:titleTextColor="@color/colorWhite" />
+
     </LinearLayout>
 
     <include layout="@layout/view_video_controller" />

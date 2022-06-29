@@ -92,6 +92,11 @@ public class TrimVideo {
             return this;
         }
 
+        public ActivityBuilder setBottomText(String bottomText) {
+            options.bottomText = bottomText;
+            return this;
+        }
+
         public void start(Activity activity,
                           ActivityResultLauncher<Intent> launcher) {
             validate();
