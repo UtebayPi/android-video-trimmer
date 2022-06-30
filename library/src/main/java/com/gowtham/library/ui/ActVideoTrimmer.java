@@ -136,13 +136,18 @@ public class ActVideoTrimmer extends LocalizationActivity {
     private String fileName;
     private Toolbar topToolbar;
     private Toolbar bottomToolbar;
+    private TextView tvBottomToolbarTitle;
+    private TextView tvTopToolbarTitle;
+    private TextView tvCutDuration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_video_trimmer);
         bottomToolbar = findViewById(R.id.bottom_toolbar);
-        topToolbar = findViewById(R.id.toolbar);
+        topToolbar = findViewById(R.id.top_toolbar);
+        tvBottomToolbarTitle = findViewById(R.id.tv_bottom_toolbar_title);
+        tvTopToolbarTitle = findViewById(R.id.tv_top_toolbar_title);
         setSupportActionBar(bottomToolbar);
         bundle = getIntent().getExtras();
         Gson gson = new Gson();
@@ -166,6 +171,7 @@ public class ActVideoTrimmer extends LocalizationActivity {
         seekbar = findViewById(R.id.range_seek_bar);
         txtStartDuration = findViewById(R.id.txt_start_duration);
         txtEndDuration = findViewById(R.id.txt_end_duration);
+        tvCutDuration = findViewById(R.id.tv_cut_duration);
         seekbarController = findViewById(R.id.seekbar_controller);
         progressBar = findViewById(R.id.progress_circular);
         ImageView imageOne = findViewById(R.id.image_one);
@@ -188,8 +194,9 @@ public class ActVideoTrimmer extends LocalizationActivity {
         try {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowHomeEnabled(true);
-            actionBar.setTitle(bottomText != null ? bottomText : getString(R.string.trim));
-            topToolbar.setTitle(title != null ? title : getString(R.string.txt_edt_video));
+            actionBar.setDisplayShowTitleEnabled(false);
+            tvBottomToolbarTitle.setText(bottomText != null ? bottomText : getString(R.string.trim));
+            tvTopToolbarTitle.setText(title != null ? title : getString(R.string.txt_edt_video));
             bottomToolbar.setNavigationIcon(R.drawable.ic_close);
         } catch (Exception e) {
             e.printStackTrace();
@@ -358,8 +365,8 @@ public class ActVideoTrimmer extends LocalizationActivity {
 
     private void setUpSeekBar() {
         seekbar.setVisibility(View.VISIBLE);
-        txtStartDuration.setVisibility(View.VISIBLE);
-        txtEndDuration.setVisibility(View.VISIBLE);
+        //txtStartDuration.setVisibility(View.VISIBLE);
+        //txtEndDuration.setVisibility(View.VISIBLE);
 
         seekbarController.setMaxValue(totalDuration).apply();
         seekbar.setMaxValue(totalDuration).apply();
@@ -397,8 +404,9 @@ public class ActVideoTrimmer extends LocalizationActivity {
             }
             lastMinValue = minVal;
             lastMaxValue = maxVal;
-            txtStartDuration.setText(TrimmerUtils.formatSeconds(minVal));
-            txtEndDuration.setText(TrimmerUtils.formatSeconds(maxVal));
+            //txtStartDuration.setText(TrimmerUtils.formatSeconds(minVal));
+            //txtEndDuration.setText(TrimmerUtils.formatSeconds(maxVal));
+            tvCutDuration.setText(TrimmerUtils.formatSeconds(maxVal - minVal));
             if (trimType == 3)
                 setDoneColor(minVal, maxVal);
         });

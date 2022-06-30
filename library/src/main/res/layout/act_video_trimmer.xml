@@ -9,12 +9,20 @@
     <LinearLayout style="@style/FView">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/top_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="#212121"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:titleTextColor="@color/colorWhite" />
+            app:titleTextColor="@color/colorWhite">
+
+            <TextView
+                android:id="@+id/tv_top_toolbar_title"
+                style="@style/toolbar_char_data_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="72dp" />
+        </androidx.appcompat.widget.Toolbar>
 
         <RelativeLayout style="@style/VWView">
 
@@ -35,9 +43,10 @@
 
             <ProgressBar
                 android:id="@+id/progress_circular"
-                android:layout_centerInParent="true"
-                style="@style/WView" />
+                style="@style/WView"
+                android:layout_centerInParent="true" />
         </RelativeLayout>
+
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/bottom_toolbar"
@@ -45,9 +54,29 @@
             android:layout_height="?attr/actionBarSize"
             android:background="#212121"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:titleTextColor="@color/colorWhite" />
+            app:titleTextColor="@color/colorWhite">
+
+            <TextView
+                android:id="@+id/tv_bottom_toolbar_title"
+                style="@style/toolbar_char_data_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="14sp" />
+        </androidx.appcompat.widget.Toolbar>
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_cut_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="135dp"
+        android:textColor="#80FFFFFF"
+        android:textSize="14sp"
+        tools:text="AAAAA"
+        tools:textColor="@color/colorBlack" />
 
     <include layout="@layout/view_video_controller" />
 
@@ -59,7 +88,10 @@
         android:layout_marginBottom="40dp"
         android:textColor="#80FFFFFF"
         android:textSize="14sp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:text="12"
+        tools:textColor="@color/colorBlack"
+        tools:visibility="visible" />
 
 
     <TextView

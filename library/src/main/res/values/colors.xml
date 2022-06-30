@@ -6,6 +6,7 @@
     <color name="colorTheme">#3580FF</color>
     <color name="colorSkyTheme">#4A90E2</color>
     <color name="colorWhite">#fff</color>
+    <color name="new_white">#DEFFFFFF</color>
     <color name="colorBlack">#000</color>
     <color name="colorTxt">#212121</color>
     <color name="colorHint">#707070</color>
