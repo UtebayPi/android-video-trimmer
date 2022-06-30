@@ -1,0 +1,127 @@
+Index: app/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>apply plugin: 'com.android.application'\n\nandroid {\n    compileSdkVersion 30\n    buildToolsVersion \"30.0.3\"\n\n    defaultConfig {\n        applicationId \"com.utebayKazAlm.countriesapi\"\n        minSdkVersion 19\n        targetSdkVersion 30\n        versionCode 1\n        versionName \"1.0\"\n        multiDexEnabled true\n        testInstrumentationRunner \"androidx.test.runner.AndroidJUnitRunner\"\n    }\n\n    sourceSets {\n        main {\n            assets.srcDirs = ['src/main/assets', 'src/main/assets/']\n            res.srcDirs = ['src/main/res', 'src/main/res/drawable']\n        }\n    }\n\n    dexOptions {\n        javaMaxHeapSize \"4g\"\n    }\n\n    configurations {\n        all*.exclude group: 'commons-logging', module: 'commons-logging'\n        all*.exclude group: 'xpp3', module: 'xpp3'\n    }\n\n    packagingOptions {\n        exclude 'META-INF/license.txt'\n        exclude 'META-INF/notice.txt'\n    }\n\n    buildTypes {\n        release {\n            minifyEnabled false\n            shrinkResources false\n            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'\n        }\n    }\n\n    compileOptions {\n        sourceCompatibility JavaVersion.VERSION_1_8\n        targetCompatibility JavaVersion.VERSION_1_8\n    }\n}\n\ndependencies {\n    implementation 'androidx.appcompat:appcompat:1.3.0'\n    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'\n    implementation project(path: ':library')\n    implementation 'androidx.multidex:multidex:2.0.1'\n    implementation 'com.cocosw:bottomsheet:1.5.0@aar'\n    implementation 'com.google.android.material:material:1.3.0'\n    implementation 'androidx.legacy:legacy-support-v4:1.0.0'\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle b/app/build.gradle
+--- a/app/build.gradle	(revision b74f68db1ebafe7c934f10b9d416505df199144b)
++++ b/app/build.gradle	(date 1656595853454)
+@@ -37,8 +37,8 @@
+ 
+     buildTypes {
+         release {
+-            minifyEnabled false
+-            shrinkResources false
++            minifyEnabled true
++            shrinkResources true
+             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+         }
+     }
+Index: app/src/main/java/com/gowtham/videotrimmer/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.gowtham.videotrimmer;\n\nimport android.Manifest;\nimport android.app.Activity;\nimport android.content.Intent;\nimport android.content.pm.PackageManager;\nimport android.net.Uri;\nimport android.os.Bundle;\nimport android.util.Log;\nimport android.view.View;\nimport android.widget.EditText;\nimport android.widget.MediaController;\nimport android.widget.Toast;\nimport android.widget.VideoView;\n\nimport androidx.activity.result.ActivityResult;\nimport androidx.activity.result.ActivityResultCallback;\nimport androidx.activity.result.ActivityResultLauncher;\nimport androidx.activity.result.contract.ActivityResultContracts;\nimport androidx.annotation.NonNull;\nimport androidx.annotation.Nullable;\nimport androidx.appcompat.app.AppCompatActivity;\nimport androidx.core.app.ActivityCompat;\nimport androidx.core.content.ContextCompat;\n\nimport com.cocosw.bottomsheet.BottomSheet;\nimport com.gowtham.library.utils.CompressOption;\nimport com.gowtham.library.utils.FileUtils;\nimport com.gowtham.library.utils.LogMessage;\nimport com.gowtham.library.utils.TrimType;\nimport com.gowtham.library.utils.TrimVideo;\nimport com.gowtham.library.utils.TrimmerUtils;\n\nimport java.io.File;\n\npublic class MainActivity extends AppCompatActivity implements View.OnClickListener {\n\n    private static final String TAG = \"MainActivity\";\n    private VideoView videoView;\n    private MediaController mediaController;\n    private EditText edtFixedGap, edtMinGap, edtMinFrom, edtMAxTo;\n    private int trimType;\n\n    ActivityResultLauncher<Intent> videoTrimResultLauncher = registerForActivityResult(\n            new ActivityResultContracts.StartActivityForResult(),\n            result -> {\n                if (result.getResultCode() == Activity.RESULT_OK &&\n                        result.getData() != null) {\n                    Uri uri = Uri.parse(TrimVideo.getTrimmedVideoPath(result.getData()));\n                    Log.d(TAG, \"Trimmed path:: \" + uri);\n                    videoView.setMediaController(mediaController);\n                    videoView.setVideoURI(uri);\n                    videoView.requestFocus();\n                    videoView.start();\n\n                    videoView.setOnPreparedListener(mediaPlayer -> {\n                        mediaController.setAnchorView(videoView);\n                    });\n\n                    String filepath = String.valueOf(uri);\n                    File file = new File(filepath);\n                    long length = file.length();\n                    Log.d(TAG, \"Video size:: \" + (length / 1024));\n                } else\n                    LogMessage.v(\"videoTrimResultLauncher data is null\");\n            });\n\n    ActivityResultLauncher<Intent> takeOrSelectVideoResultLauncher = registerForActivityResult(\n            new ActivityResultContracts.StartActivityForResult(),\n            result -> {\n                if (result.getResultCode() == Activity.RESULT_OK &&\n                        result.getData() != null) {\n                    Intent data = result.getData();\n                  //check video duration if needed\n        /*        if (TrimmerUtils.getDuration(this,data.getData())<=30){\n                    Toast.makeText(this,\"Video should be larger than 30 sec\",Toast.LENGTH_SHORT).show();\n                    return;\n                }*/\n                    if (data.getData() != null) {\n                        LogMessage.v(\"Video path:: \" + data.getData());\n                        openTrimActivity(String.valueOf(data.getData()));\n                    } else {\n                        Toast.makeText(this, \"video uri is null\", Toast.LENGTH_SHORT).show();\n                    }\n                } else\n                    LogMessage.v(\"takeVideoResultLauncher data is null\");\n            });\n\n    @Override\n    protected void onCreate(Bundle savedInstanceState) {\n        super.onCreate(savedInstanceState);\n        setContentView(R.layout.activity_main);\n        videoView = findViewById(R.id.video_view);\n        edtFixedGap = findViewById(R.id.edt_fixed_gap);\n        edtMinGap = findViewById(R.id.edt_min_gap);\n        edtMinFrom = findViewById(R.id.edt_min_from);\n        edtMAxTo = findViewById(R.id.edt_max_to);\n        mediaController = new MediaController(this);\n\n\n        findViewById(R.id.btn_default_trim).setOnClickListener(this);\n        findViewById(R.id.btn_fixed_gap).setOnClickListener(this);\n        findViewById(R.id.btn_min_gap).setOnClickListener(this);\n        findViewById(R.id.btn_min_max_gap).setOnClickListener(this);\n    }\n\n    private void openTrimActivity(String data) {\n        if (trimType == 0) {\n            TrimVideo.activity(data)\n                    .setBottomText(\"!!!!!\")\n                    .setCompressOption(new CompressOption()) //pass empty constructor for default compress option\n                    .start(this, videoTrimResultLauncher);\n        } else if (trimType == 1) {\n            TrimVideo.activity(data)\n                    .setBottomText(\"!!!!!\")\n                    .setTrimType(TrimType.FIXED_DURATION)\n                    .setFixedDuration(getEdtValueLong(edtFixedGap))\n                    .setLocal(\"ar\")\n                    .start(this, videoTrimResultLauncher);\n        } else if (trimType == 2) {\n            TrimVideo.activity(data)\n                    .setBottomText(\"!!!!!\")\n                    .setTrimType(TrimType.MIN_DURATION)\n                    .setLocal(\"ar\")\n                    .setMinDuration(getEdtValueLong(edtMinGap))\n                    .start(this, videoTrimResultLauncher);\n        } else {\n            TrimVideo.activity(data)\n                    .setBottomText(\"!!!!!\")\n                    .setTrimType(TrimType.MIN_MAX_DURATION)\n                    .setLocal(\"ar\")\n                    .setMinToMax(getEdtValueLong(edtMinFrom), getEdtValueLong(edtMAxTo))\n                    .start(this, videoTrimResultLauncher);\n        }\n    }\n\n    @Override\n    public void onClick(View v) {\n        switch (v.getId()) {\n            case R.id.btn_default_trim:\n                onDefaultTrimClicked();\n                break;\n            case R.id.btn_fixed_gap:\n                onFixedTrimClicked();\n                break;\n            case R.id.btn_min_gap:\n                onMinGapTrimClicked();\n                break;\n            case R.id.btn_min_max_gap:\n                onMinToMaxTrimClicked();\n                break;\n        }\n    }\n\n    private void onDefaultTrimClicked() {\n        trimType = 0;\n        if (checkCamStoragePer())\n            showVideoOptions();\n    }\n\n    private void onFixedTrimClicked() {\n        trimType = 1;\n        if (isEdtTxtEmpty(edtFixedGap))\n            Toast.makeText(this, \"Enter fixed gap duration\", Toast.LENGTH_SHORT).show();\n        else if (checkCamStoragePer())\n            showVideoOptions();\n    }\n\n    private void onMinGapTrimClicked() {\n        trimType = 2;\n        if (isEdtTxtEmpty(edtMinGap))\n            Toast.makeText(this, \"Enter min gap duration\", Toast.LENGTH_SHORT).show();\n        else if (checkCamStoragePer())\n            showVideoOptions();\n    }\n\n\n    private void onMinToMaxTrimClicked() {\n        trimType = 3;\n        if (isEdtTxtEmpty(edtMinFrom))\n            Toast.makeText(this, \"Enter min gap duration\", Toast.LENGTH_SHORT).show();\n        else if (isEdtTxtEmpty(edtMAxTo))\n            Toast.makeText(this, \"Enter max gap duration\", Toast.LENGTH_SHORT).show();\n        else if (checkCamStoragePer())\n            showVideoOptions();\n    }\n\n    public void showVideoOptions() {\n        try {\n            BottomSheet.Builder builder = getBottomSheet();\n            builder.sheet(R.menu.menu_video);\n            builder.listener(item -> {\n                if (R.id.action_take == item.getItemId())\n                    captureVideo();\n                else\n                    openVideo();\n                return false;\n            });\n            builder.show();\n        } catch (Exception e) {\n            e.printStackTrace();\n        }\n    }\n\n    public BottomSheet.Builder getBottomSheet() {\n        return new BottomSheet.Builder(this).title(R.string.txt_option);\n    }\n\n    public void captureVideo() {\n        try {\n            Intent intent = new Intent(\"android.media.action.VIDEO_CAPTURE\");\n            intent.putExtra(\"android.intent.extra.durationLimit\", 30);\n            takeOrSelectVideoResultLauncher.launch(intent);\n        } catch (Exception e) {\n            e.printStackTrace();\n        }\n    }\n\n    public void openVideo() {\n        try {\n            Intent intent = new Intent();\n            intent.setType(\"video/*\");\n            intent.setAction(Intent.ACTION_GET_CONTENT);\n            takeOrSelectVideoResultLauncher.launch(Intent.createChooser(intent, \"Select Video\"));\n        } catch (Exception e) {\n            e.printStackTrace();\n        }\n    }\n\n    @Override\n    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {\n        super.onRequestPermissionsResult(requestCode, permissions, grantResults);\n        if (isPermissionOk(grantResults))\n            showVideoOptions();\n    }\n\n    private boolean isEdtTxtEmpty(EditText editText) {\n        return editText.getText().toString().trim().isEmpty();\n    }\n\n    private long getEdtValueLong(EditText editText) {\n        return Long.parseLong(editText.getText().toString().trim());\n    }\n\n    private boolean checkCamStoragePer() {\n        return checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA);\n    }\n\n    private boolean checkPermission(String... permissions) {\n        boolean allPermitted = false;\n        for (String permission : permissions) {\n            allPermitted = (ContextCompat.checkSelfPermission(this, permission)\n                    == PackageManager.PERMISSION_GRANTED);\n            if (!allPermitted)\n                break;\n        }\n        if (allPermitted)\n            return true;\n        ActivityCompat.requestPermissions(this, permissions,\n                220);\n        return false;\n    }\n\n    private boolean isPermissionOk(int... results) {\n        boolean isAllGranted = true;\n        for (int result : results) {\n            if (PackageManager.PERMISSION_GRANTED != result) {\n                isAllGranted = false;\n                break;\n            }\n        }\n        return isAllGranted;\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/gowtham/videotrimmer/MainActivity.java b/app/src/main/java/com/gowtham/videotrimmer/MainActivity.java
+--- a/app/src/main/java/com/gowtham/videotrimmer/MainActivity.java	(revision b74f68db1ebafe7c934f10b9d416505df199144b)
++++ b/app/src/main/java/com/gowtham/videotrimmer/MainActivity.java	(date 1656595853455)
+@@ -107,26 +107,22 @@
+     private void openTrimActivity(String data) {
+         if (trimType == 0) {
+             TrimVideo.activity(data)
+-                    .setBottomText("!!!!!")
+                     .setCompressOption(new CompressOption()) //pass empty constructor for default compress option
+                     .start(this, videoTrimResultLauncher);
+         } else if (trimType == 1) {
+             TrimVideo.activity(data)
+-                    .setBottomText("!!!!!")
+                     .setTrimType(TrimType.FIXED_DURATION)
+                     .setFixedDuration(getEdtValueLong(edtFixedGap))
+                     .setLocal("ar")
+                     .start(this, videoTrimResultLauncher);
+         } else if (trimType == 2) {
+             TrimVideo.activity(data)
+-                    .setBottomText("!!!!!")
+                     .setTrimType(TrimType.MIN_DURATION)
+                     .setLocal("ar")
+                     .setMinDuration(getEdtValueLong(edtMinGap))
+                     .start(this, videoTrimResultLauncher);
+         } else {
+             TrimVideo.activity(data)
+-                    .setBottomText("!!!!!")
+                     .setTrimType(TrimType.MIN_MAX_DURATION)
+                     .setLocal("ar")
+                     .setMinToMax(getEdtValueLong(edtMinFrom), getEdtValueLong(edtMAxTo))
+Index: library/src/main/java/com/gowtham/library/utils/TrimVideo.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.gowtham.library.utils;\n\nimport android.app.Activity;\nimport android.content.Intent;\nimport android.os.Bundle;\n\nimport androidx.activity.result.ActivityResultLauncher;\nimport androidx.annotation.Nullable;\nimport androidx.fragment.app.Fragment;\n\nimport com.google.gson.Gson;\nimport com.gowtham.library.ui.ActVideoTrimmer;\n\npublic class TrimVideo {\n\n    public static final String TRIM_VIDEO_OPTION = \"trim_video_option\",\n            TRIM_VIDEO_URI = \"trim_video_uri\", TRIMMED_VIDEO_PATH = \"trimmed_video_path\";\n\n    public static ActivityBuilder activity(String uri) {\n        return new ActivityBuilder(uri);\n    }\n\n    public static String getTrimmedVideoPath(Intent intent) {\n        return intent.getStringExtra(TRIMMED_VIDEO_PATH);\n    }\n\n    public static final class ActivityBuilder {\n\n        @Nullable\n        private final String videoUri;\n\n        private final TrimVideoOptions options;\n\n        public ActivityBuilder(@Nullable String videoUri) {\n            this.videoUri = videoUri;\n            options = new TrimVideoOptions();\n            options.trimType = TrimType.DEFAULT;\n        }\n\n        public ActivityBuilder setTrimType(final TrimType trimType) {\n            options.trimType = trimType;\n            return this;\n        }\n\n        public ActivityBuilder setLocal(final String local) {\n            options.local = local;\n            return this;\n        }\n\n        public ActivityBuilder setHideSeekBar(final boolean hide) {\n            options.hideSeekBar = hide;\n            return this;\n        }\n\n        public ActivityBuilder setCompressOption(final CompressOption compressOption) {\n            options.compressOption = compressOption;\n            return this;\n        }\n\n        public ActivityBuilder setFileName(final String fileName) {\n            options.fileName = fileName;\n            return this;\n        }\n\n        public ActivityBuilder showFileLocationAlert() {\n            options.showFileLocationAlert = true;\n            return this;\n        }\n\n        public ActivityBuilder setAccurateCut(final boolean accurate) {\n            options.accurateCut = accurate;\n            return this;\n        }\n\n        public ActivityBuilder setMinDuration(final long minDuration) {\n            options.minDuration = minDuration;\n            return this;\n        }\n\n        public ActivityBuilder setFixedDuration(final long fixedDuration) {\n            options.fixedDuration = fixedDuration;\n            return this;\n        }\n\n        public ActivityBuilder setMinToMax(long min, long max) {\n            options.minToMax = new long[]{min, max};\n            return this;\n        }\n\n        public ActivityBuilder setTitle(String title) {\n            options.title = title;\n            return this;\n        }\n\n        public ActivityBuilder setBottomText(String bottomText) {\n            options.bottomText = bottomText;\n            return this;\n        }\n\n        public void start(Activity activity,\n                          ActivityResultLauncher<Intent> launcher) {\n            validate();\n            launcher.launch(getIntent(activity));\n        }\n\n        public void start(Fragment fragment, ActivityResultLauncher<Intent> launcher) {\n            validate();\n            launcher.launch(getIntent(fragment.getActivity()));\n        }\n\n        private void validate() {\n            if (videoUri == null)\n                throw new NullPointerException(\"VideoUri cannot be null.\");\n            if (videoUri.isEmpty())\n                throw new IllegalArgumentException(\"VideoUri cannot be empty\");\n            if (options.trimType == null)\n                throw new NullPointerException(\"TrimType cannot be null\");\n            if (options.minDuration < 0)\n                throw new IllegalArgumentException(\"Cannot set min duration to a number < 1\");\n            if (options.fixedDuration < 0)\n                throw new IllegalArgumentException(\"Cannot set fixed duration to a number < 1\");\n            if (options.trimType == TrimType.MIN_MAX_DURATION && options.minToMax == null)\n                throw new IllegalArgumentException(\"Used trim type is TrimType.MIN_MAX_DURATION.\" +\n                        \"Give the min and max duration\");\n            if (options.minToMax != null) {\n                if ((options.minToMax[0] < 0 || options.minToMax[1] < 0))\n                    throw new IllegalArgumentException(\"Cannot set min to max duration to a number < 1\");\n                if ((options.minToMax[0] > options.minToMax[1]))\n                    throw new IllegalArgumentException(\"Minimum duration cannot be larger than max duration\");\n                if ((options.minToMax[0] == options.minToMax[1]))\n                    throw new IllegalArgumentException(\"Minimum duration cannot be same as max duration.Use Fixed duration\");\n            }\n        }\n\n        private Intent getIntent(Activity activity) {\n            Intent intent = new Intent(activity, ActVideoTrimmer.class);\n            Gson gson = new Gson();\n            Bundle bundle = new Bundle();\n            bundle.putString(TRIM_VIDEO_URI, videoUri);\n            bundle.putString(TRIM_VIDEO_OPTION, gson.toJson(options));\n            intent.putExtras(bundle);\n            return intent;\n        }\n    }\n\n\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/library/src/main/java/com/gowtham/library/utils/TrimVideo.java b/library/src/main/java/com/gowtham/library/utils/TrimVideo.java
+--- a/library/src/main/java/com/gowtham/library/utils/TrimVideo.java	(revision b74f68db1ebafe7c934f10b9d416505df199144b)
++++ b/library/src/main/java/com/gowtham/library/utils/TrimVideo.java	(date 1656595853456)
+@@ -14,13 +14,13 @@
+ public class TrimVideo {
+ 
+     public static final String TRIM_VIDEO_OPTION = "trim_video_option",
+-            TRIM_VIDEO_URI = "trim_video_uri", TRIMMED_VIDEO_PATH = "trimmed_video_path";
++            TRIM_VIDEO_URI = "trim_video_uri",TRIMMED_VIDEO_PATH="trimmed_video_path";
+ 
+     public static ActivityBuilder activity(String uri) {
+         return new ActivityBuilder(uri);
+     }
+ 
+-    public static String getTrimmedVideoPath(Intent intent) {
++    public static String getTrimmedVideoPath(Intent intent){
+         return intent.getStringExtra(TRIMMED_VIDEO_PATH);
+     }
+ 
+@@ -34,7 +34,7 @@
+         public ActivityBuilder(@Nullable String videoUri) {
+             this.videoUri = videoUri;
+             options = new TrimVideoOptions();
+-            options.trimType = TrimType.DEFAULT;
++            options.trimType=TrimType.DEFAULT;
+         }
+ 
+         public ActivityBuilder setTrimType(final TrimType trimType) {
+@@ -103,7 +103,7 @@
+             launcher.launch(getIntent(activity));
+         }
+ 
+-        public void start(Fragment fragment, ActivityResultLauncher<Intent> launcher) {
++        public void start(Fragment fragment,ActivityResultLauncher<Intent> launcher) {
+             validate();
+             launcher.launch(getIntent(fragment.getActivity()));
+         }
+@@ -119,10 +119,10 @@
+                 throw new IllegalArgumentException("Cannot set min duration to a number < 1");
+             if (options.fixedDuration < 0)
+                 throw new IllegalArgumentException("Cannot set fixed duration to a number < 1");
+-            if (options.trimType == TrimType.MIN_MAX_DURATION && options.minToMax == null)
++            if (options.trimType==TrimType.MIN_MAX_DURATION && options.minToMax==null)
+                 throw new IllegalArgumentException("Used trim type is TrimType.MIN_MAX_DURATION." +
+                         "Give the min and max duration");
+-            if (options.minToMax != null) {
++            if (options.minToMax != null){
+                 if ((options.minToMax[0] < 0 || options.minToMax[1] < 0))
+                     throw new IllegalArgumentException("Cannot set min to max duration to a number < 1");
+                 if ((options.minToMax[0] > options.minToMax[1]))
+@@ -133,9 +133,9 @@
+         }
+ 
+         private Intent getIntent(Activity activity) {
+-            Intent intent = new Intent(activity, ActVideoTrimmer.class);
++            Intent intent = new Intent(activity,  ActVideoTrimmer.class);
+             Gson gson = new Gson();
+-            Bundle bundle = new Bundle();
++            Bundle bundle=new Bundle();
+             bundle.putString(TRIM_VIDEO_URI, videoUri);
+             bundle.putString(TRIM_VIDEO_OPTION, gson.toJson(options));
+             intent.putExtras(bundle);
