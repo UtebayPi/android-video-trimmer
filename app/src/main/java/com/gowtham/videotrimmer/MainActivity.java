@@ -98,6 +98,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mediaController = new MediaController(this);
 
 
+
+
         findViewById(R.id.btn_default_trim).setOnClickListener(this);
         findViewById(R.id.btn_fixed_gap).setOnClickListener(this);
         findViewById(R.id.btn_min_gap).setOnClickListener(this);
