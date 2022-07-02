@@ -21,7 +21,8 @@
                 style="@style/toolbar_char_data_style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="72dp" />
+                android:layout_marginStart="72dp"
+                android:textSize="18sp"/>
         </androidx.appcompat.widget.Toolbar>
 
         <RelativeLayout style="@style/VWView">
