@@ -6,7 +6,9 @@
     android:background="#303030"
     tools:ignore="ContentDescription">
 
-    <LinearLayout style="@style/FView">
+    <LinearLayout
+        style="@style/FView"
+        android:weightSum="30">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/top_toolbar"
@@ -22,10 +24,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="72dp"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
         </androidx.appcompat.widget.Toolbar>
 
-        <RelativeLayout style="@style/VWView">
+        <RelativeLayout
+            style="@style/VWView"
+            android:layout_weight="22">
 
             <com.google.android.exoplayer2.ui.PlayerView
                 android:id="@+id/player_view_lib"
@@ -48,23 +52,6 @@
                 android:layout_centerInParent="true" />
         </RelativeLayout>
 
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/bottom_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="#212121"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:titleTextColor="@color/colorWhite">
-
-            <TextView
-                android:id="@+id/tv_bottom_toolbar_title"
-                style="@style/toolbar_char_data_style"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textSize="14sp" />
-        </androidx.appcompat.widget.Toolbar>
 
     </LinearLayout>
 
@@ -104,5 +91,23 @@
         android:textColor="#80FFFFFF"
         android:textSize="14sp"
         android:visibility="gone" />
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/bottom_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_gravity="bottom"
+        android:background="#212121"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:titleTextColor="@color/colorWhite">
+
+        <TextView
+            android:id="@+id/tv_bottom_toolbar_title"
+            style="@style/toolbar_char_data_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="14sp" />
+    </androidx.appcompat.widget.Toolbar>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
